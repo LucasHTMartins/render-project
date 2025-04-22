@@ -1,18 +1,16 @@
 const express = require("express");
 const app = express();
+const morgan = require("morgan");
+const Person = require("./models/person");
+
 app.use(express.json());
 app.use(express.static("dist"));
-
-const morgan = require("morgan");
 
 morgan.token("body", (req) => {
   return req.method === "POST" ? JSON.stringify(req.body) : "";
 });
 
 app.use(morgan(":method :url :status :res[content-length] - :response-time ms :body"));
-
-const cors = require("cors");
-app.use(cors());
 
 
 const PORT = process.env.PORT || 3001;
@@ -45,7 +43,9 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/persons", (req, res) => {
-    res.json(data);
+    Person
+        .find({})
+        .then(persons => {res.json(persons)});
 });
 
 app.get("/api/persons/:id", (req, res) => {
